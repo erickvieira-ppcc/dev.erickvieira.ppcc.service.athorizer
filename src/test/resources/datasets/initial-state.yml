@@ -1,0 +1,57 @@
+tb_wallet:
+  - id: "a9a03905-d962-592c-aad0-f7555d81fe59"
+    user_id: "9c05df92-4044-54ee-964c-ab5aee0b4f57"
+    surname: "vacations"
+    is_active: true
+    is_default: true
+    min_balance: 0.00
+    accept_bank_transfer: true
+    accept_payments: true
+    accept_withdrawing: true
+    accept_deposit: true
+    created_at: "2021-12-25 21:54:34"
+    updated_at: null
+    deleted_at: null
+  - id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    user_id: "9c05df92-4044-54ee-964c-ab5aee0b4f57"
+    surname: "health"
+    is_active: true
+    is_default: false
+    min_balance: 0.00
+    accept_bank_transfer: true
+    accept_payments: true
+    accept_withdrawing: true
+    accept_deposit: true
+    created_at: "2021-12-25 21:34:47"
+    updated_at: null
+    deleted_at: null
+  - id: "4622f0f7-7134-5301-a918-b5ba7ffd0ea3"
+    user_id: "f363e5e5-1d31-5f01-b58d-300501e9c4ff"
+    surname: "health"
+    is_active: true
+    is_default: true
+    min_balance: 0.00
+    accept_bank_transfer: true
+    accept_payments: true
+    accept_withdrawing: true
+    accept_deposit: true
+    created_at: "2021-12-25 21:34:47"
+    updated_at: null
+    deleted_at: null
+
+tb_transacao:
+  - wallet_id: "a9a03905-d962-592c-aad0-f7555d81fe59"
+    event: 4
+    value: 100.00
+    credit_delta: 100.00
+    created_at: "2021-12-25 02:07:07"
+  - wallet_id: "3fa85f64-5717-4562-b3fc-2c963f66afa6"
+    event: 4
+    value: 100.00
+    credit_delta: 100.00
+    created_at: "2021-12-25 02:07:07"
+  - wallet_id: "4622f0f7-7134-5301-a918-b5ba7ffd0ea3"
+    event: 4
+    value: 100.00
+    credit_delta: 100.00
+    created_at: "2021-12-25 02:07:07"

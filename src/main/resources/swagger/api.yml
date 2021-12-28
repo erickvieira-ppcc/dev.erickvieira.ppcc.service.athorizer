@@ -1,0 +1,452 @@
+openapi: 3.0.1
+info:
+  title: Banking API
+  description: The banking API
+  version: 1.0.0
+tags:
+  - name: Banking
+    description: Banking API
+servers:
+  - url: /api/v1
+paths:
+  '/banking/pay':
+    post:
+      tags: [ Banking ]
+      operationId: pay
+      summary: Try to authorize a payment
+      description: It validates if the wallet has sufficient funds and if isActive and acceptPayments flags are true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankingOkResponse'
+        '400':
+          $ref: '#/components/responses/BankingBadRequestResponse'
+        '404':
+          $ref: '#/components/responses/BankingNotFoundResponse'
+  '/banking/transfer/{fromWallet}':
+    post:
+      tags: [ Banking ]
+      operationId: transferTo
+      summary: Try to authorize a bank transfer
+      description: It validates if the wallet has sufficient funds and if isActive and acceptBankTransfer flags are true
+      parameters:
+        - in: path
+          name: fromWallet
+          schema:
+            type: string
+            format: uuid
+            example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+          required: true
+          description: Wallet UUID that will be debited
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankingOkResponse'
+        '400':
+          $ref: '#/components/responses/BankingBadRequestResponse'
+        '404':
+          $ref: '#/components/responses/BankingNotFoundResponse'
+  '/banking/withdraw':
+    post:
+      tags: [ Banking ]
+      operationId: withdraw
+      summary: Try to authorize a withdrwaing
+      description: It validates if the wallet has sufficient funds and if isActive and acceptWithdrawing flags are true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankingOkResponse'
+        '400':
+          $ref: '#/components/responses/BankingBadRequestResponse'
+        '404':
+          $ref: '#/components/responses/BankingNotFoundResponse'
+  '/banking/deposit':
+    post:
+      tags: [ Banking ]
+      operationId: deposit
+      summary: Try to authorize a deposit
+      description: It validates if the wallet exists and if isActive and acceptDeposit flags are true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionDTO'
+      responses:
+        '200':
+          $ref: '#/components/responses/BankingOkResponse'
+        '400':
+          $ref: '#/components/responses/BankingBadRequestResponse'
+        '404':
+          $ref: '#/components/responses/BankingNotFoundResponse'
+  '/undo/{transactionId}':
+    put:
+      tags: [ Banking ]
+      operationId: undo
+      summary: Undo a given transaction
+      description: It refunds the transaction value to its original associated wallet
+      parameters:
+        - in: path
+          name: transactionId
+          schema:
+            type: string
+            format: uuid
+            example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+          required: true
+          description: Transaction UUID
+      responses:
+        '200':
+          $ref: '#/components/responses/BankingOkResponse'
+        '400':
+          $ref: '#/components/responses/BankingBadRequestResponse'
+        '404':
+          $ref: '#/components/responses/BankingNotFoundResponse'
+  '/wallet/{walletId}/balance':
+    get:
+      tags: [ Banking ]
+      operationId: balance
+      summary: Calculates the wallet balance
+      description: It sums all the previous made opperations value
+      parameters:
+        - in: path
+          name: walletId
+          schema:
+            type: string
+            format: uuid
+            example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+          required: true
+          description: Wallet UUID
+      responses:
+        '200':
+          $ref: '#/components/responses/BalanceOkResponse'
+        '404':
+          $ref: '#/components/responses/DefaultApiErrorResponse'
+  '/wallet/{walletId}/history':
+    get:
+      tags: [ Banking ]
+      operationId: history
+      summary: Transaction history
+      description: It returns the wallet transaction history
+      parameters:
+        - in: path
+          name: walletId
+          schema:
+            type: string
+            format: uuid
+            example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+          required: true
+          description: Wallet UUID
+        - name: startDate
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2001-01-01"
+          required: false
+          description: Start date
+        - name: endDate
+          in: query
+          schema:
+            type: string
+            format: date
+          example: "2001-01-01"
+          required: false
+          description: End date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 0
+          required: false
+          description: Current page
+        - name: size
+          in: query
+          schema:
+            type: integer
+            format: int32
+            default: 10
+          required: false
+          description: Items count per page
+      responses:
+        '200':
+          $ref: '#/components/responses/HistoryOkResponse'
+        '404':
+          $ref: '#/components/responses/DefaultApiErrorResponse'
+components:
+  responses:
+    BankingOkResponse:
+      description: Processed request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProcessedTransactionDTO'
+    BankingNotFoundResponse:
+      description: Wallet not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProcessedTransactionDTO'
+    BankingBadRequestResponse:
+      description: An error occured while processing the request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ProcessedTransactionDTO'
+    BalanceOkResponse:
+      description: Processed request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BalanceDTO'
+    HistoryOkResponse:
+      description: Processed request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PageApprovedTransactionDTO'
+    UndoOkResponse:
+      description: Processed request
+    DefaultApiErrorResponse:
+      description: Wallet not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+  schemas:
+    PageApprovedTransactionDTO:
+      title: Page«ApprovedTransaction»
+      type: object
+      description: A page of ApprovedTransactionDTO
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/ApprovedTransactionDTO'
+        total:
+          type: integer
+          format: int64
+        pageCount:
+          type: integer
+          format: int32
+        sortedBy:
+          type: string
+        pageable:
+          $ref: '#/components/schemas/Pageable'
+      required:
+        - content
+        - total
+        - pageCount
+        - sortedBy
+        - pageable
+    ApprovedTransactionDTO:
+      type: object
+      description: The aproved transaction request
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        originalId:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        wallet:
+          $ref: '#/components/schemas/WalletDTO'
+        event:
+          $ref: '#/components/schemas/TransactionEvent'
+        value:
+          type: number
+          format: double
+          example: 0.00
+        creditDelta:
+          type: number
+          format: double
+          example: 0.00
+        createdAt:
+          type: string
+          format: date-time
+          example: "2001-01-01T00:00:00.000Z"
+      required:
+        - id
+        - wallet
+        - event
+        - value
+        - creditDelta
+        - createdAt
+    WalletDTO:
+      type: object
+      description: The user's wallet
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        surname:
+          type: string
+    ProcessedTransactionDTO:
+      type: object
+      description: The processed transaction request
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        walletId:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        value:
+          type: number
+          minimum: 0
+          format: double
+          example: 0.00
+          default: 0.00
+        approvedValue:
+          type: number
+          minimum: 0
+          format: double
+          example: 0.00
+          default: 0.00
+        result:
+          $ref: '#/components/schemas/BankingResult'
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+          example: "2001-01-01T00:00:00.000Z"
+      required:
+        - value
+        - status
+        - timestamp
+    TransactionDTO:
+      type: object
+      description: The incoming transaction request
+      properties:
+        userId:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        walletId:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        value:
+          type: number
+          minimum: 0
+          format: double
+          example: 0.00
+      required:
+        - value
+    BalanceDTO:
+      type: object
+      description: The wallet balance
+      properties:
+        walletId:
+          type: string
+          format: uuid
+          example: "7435806f-4022-41d0-9c62-c9fc74d97d16"
+        balance:
+          type: number
+          format: double
+          example: 0.00
+      required:
+        - walletId
+        - balance
+    TransactionEvent:
+      type: string
+      enum:
+        - payment
+        - incoming_bank_transfer
+        - outgoing_bank_transfer
+        - withdrawing
+        - deposit
+        - undo
+    TransactionFields:
+      type: string
+      default: surname
+      enum:
+        - id
+        - originalId
+        - wallet
+        - event
+        - creditDelta
+        - createdAt
+    Sort:
+      type: object
+      properties:
+        empty:
+          type: boolean
+        sorted:
+          type: boolean
+        unsorted:
+          type: boolean
+      title: Sort
+    Direction:
+      type: string
+      default: "asc"
+      enum:
+        - asc
+        - desc
+    Pageable:
+      type: object
+      properties:
+        offset:
+          type: integer
+          format: int64
+        pageNumber:
+          type: integer
+          format: int64
+        pageSize:
+          type: integer
+          format: int32
+        paged:
+          type: boolean
+        unpaged:
+          type: boolean
+      title: Pageable
+    ApiError:
+      type: object
+      description: Balance error
+      properties:
+        type:
+          $ref: '#/components/schemas/BankingResult'
+        message:
+          type: string
+      required:
+        - walletId
+        - balance
+    BankingResult:
+      type: string
+      default: declined_by_unexpected_error
+      enum:
+        - approved
+        - declined_by_invalid_value
+        - declined_by_prohibed_undo
+        - declined_by_wallet_not_found
+        - declined_by_transaction_not_found
+        - declined_by_same_wallet_transfer
+        - declined_by_null_payload
+        - declined_by_insufficient_funds
+        - declined_by_min_balance
+        - declined_by_forbidden_operation
+        - declined_by_unexpected_error
+        - invalid_start_date
+        - invalid_end_date
+        - invalid_date_interval
+        - wallet_not_found
+        - transaction_not_found
+        - unexpected_error
+
