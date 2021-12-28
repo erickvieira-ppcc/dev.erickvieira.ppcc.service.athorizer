@@ -76,7 +76,6 @@ class BankingService(
         DecliningNullPayloadException::class,
         DecliningInvalidValueException::class,
         DecliningWalletNotFoundException::class,
-        DecliningInsufficientFundsException::class,
         DecliningUnexpectedException::class,
     )
     override fun deposit(
@@ -162,7 +161,9 @@ class BankingService(
                 payload = undesiredTransaction.toTransactionDTO(),
                 event = UNDO
             ) { transaction, result ->
-                transactionRepository.save(transaction).toProcessedTransactionDTO(result = result)
+                transactionRepository.save(
+                    transaction.withOriginalId(originalId = transactionId)
+                ).toProcessedTransactionDTO(result = result)
             }.let { processedTransactionDTO -> ResponseEntity.ok(processedTransactionDTO) }
         } ?: throw DecliningTransactionNotFoundException(value = 0.0)
     }
@@ -258,7 +259,7 @@ class BankingService(
             UNDO -> true
             else -> if (value > balance) {
                 throw DecliningInsufficientFundsException(value = payload.value)
-            } else if (wallet.minBalance.isBetween(start = BigDecimal.ZERO, end = balance - value)) {
+            } else if (wallet.minBalance > BigDecimal.ZERO && wallet.minBalance > balance - value) {
                 throw DecliningMinBalanceException(value = payload.value)
             } else true
         } && wallet.isPermittedBySettings(event = event)

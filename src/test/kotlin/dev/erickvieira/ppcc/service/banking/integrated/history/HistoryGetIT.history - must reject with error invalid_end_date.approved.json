@@ -1,0 +1,4 @@
+{
+  "type": "invalid_end_date",
+  "message": "The endDate must be lower than or equal to the current date"
+}

@@ -1,4 +1,4 @@
-package dev.erickvieira.ppcc.service.banking.integrated.payment
+package dev.erickvieira.ppcc.service.banking.integrated.deposit
 
 import com.github.database.rider.core.api.configuration.DBUnit
 import com.github.database.rider.core.api.configuration.Orthography
@@ -34,7 +34,7 @@ import java.util.*
 @ContextConfiguration(initializers = [PostgresContainerSetup::class])
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @DirtiesContext
-class PayPostIT : BankingServiceIntegratedTests() {
+class DepositPostIT : BankingServiceIntegratedTests() {
 
     @LocalServerPort
     private val port: Int = 0
@@ -46,7 +46,7 @@ class PayPostIT : BankingServiceIntegratedTests() {
     fun setUp() {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
-        RestAssured.basePath = "/api/v1/banking/pay"
+        RestAssured.basePath = "/api/v1/banking/deposit"
     }
 
     @AfterEach
@@ -59,10 +59,10 @@ class PayPostIT : BankingServiceIntegratedTests() {
     @Test
     @DataSet("initial-state.yml")
     @ExpectedDataSet(
-        "payment/scenario-approved.yml",
+        "deposit/scenario-approved.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must debit the given wallet`() {
+    fun `deposit - must credit the given wallet`() {
         val payload = generateTransactionDTO(
             walletId = UUID.fromString("a9a03905-d962-592c-aad0-f7555d81fe59"),
             value = 20.50
@@ -74,10 +74,10 @@ class PayPostIT : BankingServiceIntegratedTests() {
     @Test
     @DataSet("initial-state.yml")
     @ExpectedDataSet(
-        "payment/scenario-approved.yml",
+        "deposit/scenario-approved.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must debit the default wallet of the given user`() {
+    fun `deposit - must credit the default wallet of the given user`() {
         val payload = generateTransactionDTO(
             userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
             value = 20.50
@@ -92,7 +92,7 @@ class PayPostIT : BankingServiceIntegratedTests() {
         "initial-state.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must decline with error declined_by_wallet_not_found`() {
+    fun `deposit - must decline with error declined_by_wallet_not_found`() {
         val payload = generateTransactionDTO(
             userId = UUID.randomUUID(),
             value = 20.50
@@ -110,7 +110,7 @@ class PayPostIT : BankingServiceIntegratedTests() {
         "initial-state.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must decline with error declined_by_invalid_value`() {
+    fun `deposit - must decline with error declined_by_invalid_value`() {
         val payload = generateTransactionDTO(
             userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
             value = 0.00
@@ -128,7 +128,7 @@ class PayPostIT : BankingServiceIntegratedTests() {
         "initial-state.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must decline with error declined_by_null_payload`() {
+    fun `deposit - must decline with error declined_by_null_payload`() {
         val payload = null
         val responseBody = makeRequest(
             payload = payload,
@@ -138,48 +138,12 @@ class PayPostIT : BankingServiceIntegratedTests() {
     }
 
     @Test
-    @DataSet("initial-state.yml")
+    @DataSet("deposit/scenario-accept-deposit-false.yml")
     @ExpectedDataSet(
-        "initial-state.yml",
+        "deposit/scenario-declined-forbidden-operation.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must decline with error declined_by_insufficient_funds`() {
-        val payload = generateTransactionDTO(
-            userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
-            value = 1000.00
-        )
-        val responseBody = makeRequest(
-            payload = payload,
-            statusCode = HttpStatus.BAD_REQUEST
-        ).asString("timestamp", "id", "message")
-        Approvals.verifyJson(responseBody)
-    }
-
-    @Test
-    @DataSet("scenario-min-balance-not-zero.yml")
-    @ExpectedDataSet(
-        "scenario-min-balance-not-zero.yml",
-        compareOperation = CompareOperation.CONTAINS
-    )
-    fun `pay - must decline with error declined_by_min_balance`() {
-        val payload = generateTransactionDTO(
-            userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
-            value = 60.00
-        )
-        val responseBody = makeRequest(
-            payload = payload,
-            statusCode = HttpStatus.BAD_REQUEST
-        ).asString("timestamp", "id", "message")
-        Approvals.verifyJson(responseBody)
-    }
-
-    @Test
-    @DataSet("payment/scenario-accept-payments-false.yml")
-    @ExpectedDataSet(
-        "payment/scenario-declined-forbidden-operation.yml",
-        compareOperation = CompareOperation.CONTAINS
-    )
-    fun `pay - must decline with error declined_by_forbidden_operation`() {
+    fun `deposit - must decline with error declined_by_forbidden_operation`() {
         val payload = generateTransactionDTO(
             userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
             value = 10.00
@@ -193,10 +157,10 @@ class PayPostIT : BankingServiceIntegratedTests() {
     @Test
     @DataSet("scenario-is-active-false.yml")
     @ExpectedDataSet(
-        "payment/scenario-declined-forbidden-operation.yml",
+        "deposit/scenario-declined-forbidden-operation.yml",
         compareOperation = CompareOperation.CONTAINS
     )
-    fun `pay - must decline with error declined_by_forbidden_operation - alt`() {
+    fun `deposit - must decline with error declined_by_forbidden_operation - alt`() {
         val payload = generateTransactionDTO(
             userId = UUID.fromString("9c05df92-4044-54ee-964c-ab5aee0b4f57"),
             value = 10.00

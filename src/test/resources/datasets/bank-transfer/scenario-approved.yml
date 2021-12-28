@@ -1,0 +1,9 @@
+tb_transaction:
+  - wallet_id: "a9a03905-d962-592c-aad0-f7555d81fe59"
+    event: 2
+    value: 20.50
+    credit_delta: -20.50
+  - wallet_id: "4622f0f7-7134-5301-a918-b5ba7ffd0ea3"
+    event: 1
+    value: 20.50
+    credit_delta: 20.50

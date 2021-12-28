@@ -1,5 +1,6 @@
 package dev.erickvieira.ppcc.service.banking.error
 
+import dev.erickvieira.ppcc.service.banking.domain.exception.BadRequestException
 import dev.erickvieira.ppcc.service.banking.domain.exception.UnexpectedException
 import dev.erickvieira.ppcc.service.banking.domain.exception.NotFoundException
 import dev.erickvieira.ppcc.service.banking.domain.exception.decline.DecliningBadRequestException
@@ -51,6 +52,11 @@ class ApplicationExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ResponseBody
     fun exception(ex: NotFoundException) = ApiError(type = ex.result, message = ex.message)
+
+    @ExceptionHandler(BadRequestException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseBody
+    fun exception(ex: BadRequestException) = ApiError(type = ex.result, message = ex.message)
 
     @ExceptionHandler(UnexpectedException::class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

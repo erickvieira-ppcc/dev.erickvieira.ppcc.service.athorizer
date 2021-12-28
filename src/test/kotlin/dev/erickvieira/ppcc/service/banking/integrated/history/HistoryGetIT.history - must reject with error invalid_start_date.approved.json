@@ -1,0 +1,4 @@
+{
+  "type": "invalid_date_interval",
+  "message": "The endDate parameter must be grater than the startDate one"
+}
