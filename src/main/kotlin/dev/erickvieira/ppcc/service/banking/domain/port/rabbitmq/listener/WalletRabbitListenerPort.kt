@@ -1,4 +1,4 @@
-package dev.erickvieira.ppcc.service.banking.domain.service
+package dev.erickvieira.ppcc.service.banking.domain.port.rabbitmq.listener
 
 import com.google.gson.Gson
 import com.rabbitmq.client.Channel
@@ -14,11 +14,11 @@ import org.springframework.messaging.handler.annotation.Payload
 import org.springframework.stereotype.Component
 
 @Component
-class WalletRabbitListenerService(
+class WalletRabbitListenerPort(
     private val walletRepository: WalletRepository
 ) {
 
-    private val logger: Logger = LoggerFactory.getLogger(WalletRabbitListenerService::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(WalletRabbitListenerPort::class.java)
 
     private val gson = Gson()
 

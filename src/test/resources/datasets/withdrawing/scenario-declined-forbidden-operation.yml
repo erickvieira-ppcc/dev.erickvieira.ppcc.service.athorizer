@@ -1,0 +1,5 @@
+tb_transaction:
+  - wallet_id: "a9a03905-d962-592c-aad0-f7555d81fe59"
+    event: 3
+    value: 10.00
+    credit_delta: 0.00

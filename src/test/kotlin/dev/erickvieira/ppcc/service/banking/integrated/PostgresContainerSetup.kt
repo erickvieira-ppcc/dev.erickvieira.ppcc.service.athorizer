@@ -10,9 +10,9 @@ import org.testcontainers.junit.jupiter.Container
 class PostgresContainerSetup : ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     override fun initialize(applicationContext: ConfigurableApplicationContext) {
-        postgres.portBindings = listOf("5434:5432")
+        postgres.portBindings = listOf("5432:5432")
         postgres.start()
-        postgres.waitingFor(LogMessageWaitStrategy().withRegEx("database system is ready to accept connections"))
+        postgres.waitingFor(LogMessageWaitStrategy().withRegEx("Container postgres:13.2-alpine started"))
     }
 
     companion object {

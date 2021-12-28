@@ -1,0 +1,7 @@
+tb_transaction:
+  - original_id: "c145d561-a810-530d-883d-fb8a400fc87b"
+    wallet_id: "a9a03905-d962-592c-aad0-f7555d81fe59"
+    event: 5
+    value: 20.50
+    credit_delta: -20.50
+    created_at: "2021-12-25 02:07:07"

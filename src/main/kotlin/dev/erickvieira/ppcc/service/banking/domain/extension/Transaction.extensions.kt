@@ -5,6 +5,7 @@ import dev.erickvieira.ppcc.service.banking.web.api.model.ApprovedTransactionDTO
 import dev.erickvieira.ppcc.service.banking.web.api.model.BankingResult
 import dev.erickvieira.ppcc.service.banking.web.api.model.ProcessedTransactionDTO
 import dev.erickvieira.ppcc.service.banking.web.api.model.TransactionDTO
+import java.util.*
 
 fun Transaction.toProcessedTransactionDTO(result: BankingResult) = ProcessedTransactionDTO(
     id = id!!,
@@ -28,4 +29,14 @@ fun Transaction.toApprovedTransactionDTO() = ApprovedTransactionDTO(
     value = value.toDouble(),
     creditDelta = creditDelta.toDouble(),
     createdAt = createdAt!!,
+)
+
+fun Transaction.withOriginalId(originalId: UUID) = Transaction(
+    id = id,
+    originalId = originalId,
+    wallet = wallet,
+    event = event,
+    value = value,
+    creditDelta = creditDelta,
+    createdAt = createdAt,
 )

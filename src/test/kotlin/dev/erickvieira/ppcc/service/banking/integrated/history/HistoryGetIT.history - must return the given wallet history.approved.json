@@ -1,0 +1,18 @@
+{
+  "content": [
+    {
+      "id": "8c0c7c21-c9ce-5162-973a-978f3b74a8ad",
+      "wallet": {
+        "id": "a9a03905-d962-592c-aad0-f7555d81fe59",
+        "surname": "vacations"
+      },
+      "event": "deposit",
+      "value": 100.0,
+      "creditDelta": 100.0,
+      "createdAt": "2021-12-25T02:07:07-02:00"
+    }
+  ],
+  "total": 1,
+  "pageCount": 1,
+  "sortedBy": "createdAt: DESC"
+}
